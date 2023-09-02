@@ -17,12 +17,15 @@ func generateRandomString(n int) string {
 	}
 	return string(b)
 }
+
 func RestApiInit(app *fiber.App) {
-	app.Get("/generate_domain", func(c *fiber.Ctx) error {
-		domain := generateRandomString(8)
-		return c.JSON(fiber.Map{
-			"status":   true,
-			"response": fmt.Sprintf("%s.%s", domain, config.Settings.MainDomain),
-		})
+	app.Get("/generate_domain", GenerateDomainHandler)
+}
+
+func GenerateDomainHandler(c *fiber.Ctx) error {
+	domain := generateRandomString(8)
+	return c.JSON(fiber.Map{
+		"status":   true,
+		"response": fmt.Sprintf("%s.%s", domain, config.Settings.MainDomain),
 	})
 }

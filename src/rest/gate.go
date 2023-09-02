@@ -19,11 +19,11 @@ type ToggleRequest struct {
 }
 
 func GateInit(app *fiber.App) {
-	app.Get("/list", ListHandler)
-	app.Post("/create", CreateHandler)
-	app.Post("/update", UpdateHandler)
-	app.Post("/toggle", ToggleHandler)
-	app.Post("/delete", DeleteHandler)
+	app.Get("/list", loginRequired, ListHandler)
+	app.Post("/create", loginRequired, CreateHandler)
+	app.Post("/update", loginRequired, UpdateHandler)
+	app.Post("/toggle", loginRequired, ToggleHandler)
+	app.Post("/delete", loginRequired, DeleteHandler)
 }
 
 func ListHandler(c *fiber.Ctx) error {

@@ -2,7 +2,6 @@ package rest
 
 import (
 	"go-gatefuse/src/config"
-	"log"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -12,6 +11,17 @@ type LoginRequest struct {
 	Username   string
 	Password   string
 	RememberMe string
+}
+
+func loginRequired(c *fiber.Ctx) error {
+	session, err := config.SessionStorage.Get(c)
+	if err != nil {
+		return c.Status(500).Render("home/page-500", fiber.Map{"msg": err.Error()})
+	}
+	if session.Get("username") != config.Settings.Username {
+		return c.Redirect("/login")
+	}
+	return c.Next()
 }
 
 func AuthInit(app *fiber.App) {
@@ -25,9 +35,8 @@ func GetLoginHandler(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(500).Render("home/page-500", fiber.Map{"msg": err.Error()})
 	}
-	log.Println(session.Get("username"))
-	if session.Get("username") == "admin" {
-		return c.Redirect("/index")
+	if session.Get("username") == config.Settings.Username {
+		return c.Redirect("/dashboard")
 	}
 	return c.Render("accounts/login", fiber.Map{
 		"csrf_token": c.Locals("csrf_token"),
@@ -54,7 +63,7 @@ func PostLoginHandler(c *fiber.Ctx) error {
 			return c.Status(500).Render("home/page-500", fiber.Map{"msg": err.Error()})
 		}
 		// Success login
-		return c.Redirect("/index")
+		return c.Redirect("/dashboard")
 	}
 	// Wrong login
 	return c.Render("accounts/login", fiber.Map{
