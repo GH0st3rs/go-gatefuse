@@ -1,0 +1,12 @@
+{
+    "editor.formatOnSave": true,
+    "editor.formatOnType": true,
+    "editor.formatOnPaste": true,
+    "go.formatTool": "gofmt",
+    "go.formatFlags": [
+        "-s"
+    ],
+    "go.buildFlags": [
+        "-ldflags=-s -w"
+    ]
+}

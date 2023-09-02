@@ -1,7 +1,7 @@
 FROM nginx:latest
 COPY --from=golang:latest /usr/local/go /usr/local/go
 
-RUN apt update && apt install -y gcc g++
+RUN apt update && apt install -y gcc g++ git
 
 ENV PATH=${PATH}:/usr/local/go/bin:/opt/go/bin EDITOR=nano
 

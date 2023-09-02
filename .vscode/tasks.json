@@ -6,6 +6,7 @@
 			"label": "Build Project",
 			"command": "build",
 			"args": [
+				"--ldflags=-s -w",
 				"."
 			],
 			"options": {

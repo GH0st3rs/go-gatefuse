@@ -40,7 +40,7 @@ func AddNewRecord(db *sql.DB, s config.GateRecord) error {
 }
 
 func RetrieveAllGateRecords(db *sql.DB) ([]config.GateRecord, error) {
-	rows, err := db.Query("SELECT src_port, src_addr, dst_port, dst_addr, comment, active, uuid FROM gate_records")
+	rows, err := db.Query("SELECT src_port, src_addr, dst_port, dst_addr, proto, comment, active, uuid FROM gate_records")
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +49,7 @@ func RetrieveAllGateRecords(db *sql.DB) ([]config.GateRecord, error) {
 	var items []config.GateRecord
 	for rows.Next() {
 		var record config.GateRecord
-		err := rows.Scan(&record.SrcPort, &record.SrcAddr, &record.DstPort, &record.DstAddr, &record.Comment, &record.Active, &record.UUID)
+		err := rows.Scan(&record.SrcPort, &record.SrcAddr, &record.DstPort, &record.DstAddr, &record.Protocol, &record.Comment, &record.Active, &record.UUID)
 		if err != nil {
 			return nil, err
 		}

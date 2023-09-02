@@ -1,9 +1,5 @@
 function createGateTableRow(item) {
-    var $row = $('<tr>', {
-        'data-bs-toggle': 'modal',
-        'data-bs-target': '#exampleModal',
-        'id': item.UUID
-    });
+    var $row = $('<tr>', { 'id': item.UUID });
     // Checkbox column
     var $checkbox = $('<input>', {
         'type': 'checkbox',
@@ -12,12 +8,8 @@ function createGateTableRow(item) {
     if (item.Active) {
         $checkbox.prop('checked', true);
     }
-    var $checkboxDiv = $('<div>', {
-        'class': 'form-switch ai-c'
-    }).append($checkbox);
-    var $checkboxColumn = $('<th>', {
-        'scope': 'row'
-    }).append($checkboxDiv);
+    var $checkboxDiv = $('<div>', { 'class': 'form-switch ai-c' }).append($checkbox);
+    var $checkboxColumn = $('<th>', { 'scope': 'row' }).append($checkboxDiv);
 
     // Append columns to the row
     $row.append(
@@ -31,6 +23,33 @@ function createGateTableRow(item) {
         $('<td>').text(item.Comment)
     );
     return $row;
+}
+
+function clickOnRow(event) {
+    var row = event.target.parentElement;
+    var rowId = row.getAttribute('id');
+    $('#createNewRuleForm #uuidNew').val(rowId);
+    $('#createNewRuleForm #activeNew').prop('checked', $('#' + rowId + ' th input').prop('checked'));
+
+    var dstAddrNew = $('#' + rowId + ' td:eq(0)').text()
+    $('#createNewRuleForm #dstAddrNew').val(dstAddrNew);
+
+    var dstPortNew = $('#' + rowId + ' td:eq(1)').text()
+    $('#createNewRuleForm #dstPortNew').val(dstPortNew);
+
+    var srcAddrNew = $('#' + rowId + ' td:eq(2)').text()
+    $('#createNewRuleForm #srcAddrNew').val(srcAddrNew);
+
+    var srcPortNew = $('#' + rowId + ' td:eq(3)').text()
+    $('#createNewRuleForm #srcPortNew').val(srcPortNew);
+
+    var protoNew = $('#' + rowId + ' td:eq(4)').text()
+    $('#createNewRuleForm #protoNew').val(protoNew);
+
+    var commentNew = $('#' + rowId + ' td:eq(5)').text()
+    $('#createNewRuleForm #commentNew').val(commentNew);
+
+    $('#ruleSettingsModal').modal('show');
 }
 
 function loadGateTable() {
@@ -47,6 +66,8 @@ function loadGateTable() {
                 // Append the row to the table
                 $dataTable.append($row);
             });
+            // gateTable Add click events to every column in the table
+            $('#gateTable tbody td').click(clickOnRow);
         } else {
             alert(data.error);
         }
@@ -153,5 +174,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-
+    // gateTable Load table with rules
+    loadGateTable();
 });
