@@ -102,6 +102,7 @@ function closeNewRuleForm() {
     $form.removeClass("was-validated");
     // Clean the form after sending
     $form[0].reset();
+    $('#uuidNew').val('');
     // Hide this modal window
     $('#ruleSettingsModal').modal('hide');
 }
@@ -154,8 +155,12 @@ document.addEventListener('DOMContentLoaded', function () {
             return
         }
         // Submit data
-        if (!$('#uuidNew').val()) { createRequest(); }
-        else { updateRequest(); }
+        if (!$('#uuidNew').val()) {
+            createRequest();
+        }
+        else {
+            updateRequest();
+        }
         closeNewRuleForm();
     });
 
@@ -208,6 +213,16 @@ document.addEventListener('DOMContentLoaded', function () {
         });
         closeNewRuleForm();
     });
+
+    // ruleSettingsModal show event
+    $('#ruleSettingsModal').on('show.bs.modal', function () {
+        if (!$('#uuidNew').val()) {
+            $('#ruleSettingsModalLabel').text("Add new rule");
+        } else {
+            $('#ruleSettingsModalLabel').text("Edit this rule");
+        }
+    });
+    $('#ruleSettingsModal').on('hidden.bs.modal', closeNewRuleForm);
 
     // gateTable Load table with rules
     loadGateTable();
