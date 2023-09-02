@@ -1,0 +1,28 @@
+version: '3.8'
+services:
+  nginx:
+    image: nginx:latest
+    pid: "host"
+    volumes:
+      - ${PWD}/docker/etc/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ${PWD}/docker/etc/nginx/conf.d:/etc/nginx/conf.d:ro
+      - nginx-pid:/var/run
+
+  go-gatefuse:
+    image: go-gatefuse:latest
+    build:
+      context: .
+      dockerfile: release.dockerfile
+    pid: "host"
+    volumes:
+      - ${PWD}/docker/etc/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ${PWD}/docker/etc/nginx/conf.d:/etc/nginx/conf.d:rw
+      - nginx-pid:/var/run
+    ports:
+      - "8080:3000"
+    depends_on:
+      - nginx
+
+volumes:
+  nginx-pid:
+  nginx-conf:

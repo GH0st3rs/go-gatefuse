@@ -1,0 +1,6 @@
+go-gatefuse
+*.sqlite3
+__debug_bin*
+.vscode/
+.devcontainer/
+docs/

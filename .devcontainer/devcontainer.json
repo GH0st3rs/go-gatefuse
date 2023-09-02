@@ -3,7 +3,7 @@
     // "name": "Alpine",
     // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
     "build": {
-        "dockerfile": "../Dockerfile",
+        "dockerfile": "../debug.dockerfile",
         "context": ".."
     },
     // Features to add to the dev container. More info: https://containers.dev/features.
