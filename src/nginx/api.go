@@ -50,3 +50,20 @@ func ReloadNginx() error {
 	}
 	return nil
 }
+
+func DeleteNginxConfig(record config.GateRecord) error {
+	service := StreamService{
+		BackendName:     record.UUID,
+		ServiceAddress:  record.SrcAddr,
+		ServicePort:     record.SrcPort,
+		ExternalPort:    record.DstPort,
+		ExternalAddress: record.DstAddr,
+	}
+	switch record.Protocol {
+	case "udp":
+		return DeleteUdpConfiguration(service)
+	case "tcp":
+		return DeleteTcpConfiguration(service)
+	}
+	return nil
+}

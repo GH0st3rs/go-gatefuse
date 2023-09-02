@@ -14,3 +14,11 @@ func ensureDirectory(dir string) error {
 func writeConf(filePath string, content string) error {
 	return os.WriteFile(filePath, []byte(content), 0644)
 }
+
+func isDirEmpty(path string) (bool, error) {
+	entries, err := os.ReadDir(path)
+	if err != nil && !os.IsNotExist(err) {
+		return false, err
+	}
+	return len(entries) == 0, nil
+}

@@ -80,19 +80,25 @@ func UpdateGateRecord(db *sql.DB, record config.GateRecord) error {
 	return err
 }
 
+func DeleteGateRecord(db *sql.DB, uuid string) error {
+	query := "DELETE FROM gate_records WHERE uuid = ?"
+	_, err := db.Exec(query, uuid)
+	return err
+}
+
 func SaveAppSettings(db *sql.DB) error {
-	stmt, err := db.Prepare("UPDATE app_settings SET main_domain = ?, nginx_conf_path = ?")
+	stmt, err := db.Prepare("UPDATE app_settings SET main_domain = ?, nginx_conf_path = ?, username = ?, password = ?")
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(config.Settings.MainDomain, config.Settings.NginxConfPath)
+	_, err = stmt.Exec(config.Settings.MainDomain, config.Settings.NginxConfPath, config.Settings.Username, config.Settings.Password)
 	return err
 }
 
 func LoadAppSettings(db *sql.DB) (s config.AppSettings) {
-	row := db.QueryRow("SELECT main_domain, nginx_conf_path FROM app_settings")
-	row.Scan(&s.MainDomain, &s.NginxConfPath)
+	row := db.QueryRow("SELECT main_domain, nginx_conf_path, username, password FROM app_settings")
+	row.Scan(&s.MainDomain, &s.NginxConfPath, &s.Username, &s.Password)
 	return s
 }

@@ -3,6 +3,7 @@ package nginx
 import (
 	"fmt"
 	"go-gatefuse/src/config"
+	"os"
 	"path/filepath"
 )
 
@@ -35,4 +36,11 @@ func CreateUdpConfiguration(service StreamService, active bool) error {
 	}
 
 	return nil
+}
+
+// DeleteUdpConfiguration Delete configuration files for UDP mode
+func DeleteUdpConfiguration(service StreamService) error {
+	conf_file := fmt.Sprintf("%s.conf", service.BackendName)
+	conf_file = filepath.Join(config.Settings.NginxConfPath, conf_file)
+	return os.Remove(conf_file)
 }

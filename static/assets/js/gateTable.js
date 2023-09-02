@@ -52,6 +52,18 @@ function clickOnRow(event) {
     $('#ruleSettingsModal').modal('show');
 }
 
+function toggleRule(event) {
+    var $row = $(this).parent().parent().parent()
+    var formData = JSON.stringify({ "UUID": $row.prop('id'), "Active": $(this).prop('checked') });
+    $.ajax({
+        type: "POST",
+        url: "/toggle",
+        dataType: "json",
+        contentType: "application/json",
+        data: formData
+    })
+}
+
 function loadGateTable() {
     $.ajax({
         type: "GET",
@@ -68,6 +80,7 @@ function loadGateTable() {
             });
             // gateTable Add click events to every column in the table
             $('#gateTable tbody td').click(clickOnRow);
+            $('#gateTable input[type="checkbox"]').change(toggleRule);
         } else {
             alert(data.error);
         }
@@ -84,14 +97,13 @@ function validateNewRuleForm() {
 }
 
 function closeNewRuleForm() {
+    var $form = $('#createNewRuleForm');
     // Remove validation
-    $('#createNewRuleForm').removeClass("was-validated");
-
-    var $modal = $('#ruleSettingsModal');
+    $form.removeClass("was-validated");
     // Clean the form after sending
-    $modal[0].reset();
+    $form[0].reset();
     // Hide this modal window
-    $modal.modal('hide');
+    $('#ruleSettingsModal').modal('hide');
 }
 
 function createRequest() {
@@ -172,6 +184,29 @@ document.addEventListener('DOMContentLoaded', function () {
                 $('#dstAddrNew').val(res.response);
             }
         });
+    });
+
+    // ruleSettingsModal save settings event
+    $('#deleteGateRule').click(function (event) {
+        // Submit data
+        if (!$('#uuidNew').val()) { return }
+        // Serialize the data
+        var jsonData = JSON.stringify({ "uuid": $('#uuidNew').val() });
+        $.ajax({
+            type: "POST",
+            url: "/delete",
+            data: jsonData,
+            contentType: "application/json",  // This is important to set for JSON payload
+            dataType: "json",  // The type of data you're expecting to receive
+        }).done(function (data) {
+            if (data.status) {
+                var $row = $('#' + data.response);
+                $row.remove();
+            } else {
+                alert(data.error);
+            }
+        });
+        closeNewRuleForm();
     });
 
     // gateTable Load table with rules

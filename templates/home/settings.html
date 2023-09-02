@@ -10,30 +10,57 @@
 <!-- ### $App Screen Content ### -->
 <main class='main-content bgc-grey-100'>
     <div id='mainContent'>
-
-        <div class="masonry-item">
-            <div class="bgc-white p-20 bd">
-                <h6 class="c-grey-900">App Settings</h6>
-                <div class="mT-30">
-                    <form id="appSettingsForm" method="POST">
-                        <!-- MainDomain -->
-                        <div class="mb-3">
-                            <label class="form-label" for="inputServerDomain">Server domain name</label>
-                            <input type="text" class="form-control" id="inputServerDomain" name="main_domain"
-                                value="{{ settings.MainDomain }}" required>
-                        </div>
-                        <!-- NginxConfPath -->
-                        <div class="mb-3">
-                            <label class="form-label" for="inputNginxConfigPath">Path to NGINX conf.d directory</label>
-                            <input type="text" class="form-control" id="inputNginxConfigPath" name="nginx_conf_path"
-                                value="{{ settings.NginxConfPath }}" placeholder="/etc/nginx/conf.d" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary btn-color">Save</button>
-                    </form>
+        <div class="row gap-20">
+            <!-- App Settings -->
+            <div class="masonry-item col-md-6">
+                <div class="bgc-white p-20 bd">
+                    <h6 class="c-grey-900">App Settings</h6>
+                    <div class="mT-30">
+                        <form id="appSettingsForm" method="POST">
+                            <input type="hidden" name="request_type" value="appSettingsForm">
+                            <!-- MainDomain -->
+                            <div class="mb-3">
+                                <label class="form-label" for="inputServerDomain">Server domain name</label>
+                                <input type="text" class="form-control" id="inputServerDomain" name="main_domain"
+                                    value="{{ settings.MainDomain }}" required>
+                            </div>
+                            <!-- NginxConfPath -->
+                            <div class="mb-3">
+                                <label class="form-label" for="inputNginxConfigPath">Path to NGINX conf.d
+                                    directory</label>
+                                <input type="text" class="form-control" id="inputNginxConfigPath" name="nginx_conf_path"
+                                    value="{{ settings.NginxConfPath }}" placeholder="/etc/nginx/conf.d" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-color">Save</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <!-- Credentials -->
+            <div class="masonry-item col-md-6">
+                <div class="bgc-white p-20 bd">
+                    <h6 class="c-grey-900">Credentials</h6>
+                    <div class="mT-30">
+                        <form id="appCredentialsForm" method="POST" novalidate>
+                            <input type="hidden" name="request_type" value="appCredentialsForm">
+                            <!-- Username -->
+                            <div class="mb-3">
+                                <label class="form-label" for="inputUsername">Username</label>
+                                <input type="text" class="form-control" id="inputUsername" name="username"
+                                    value="{{ settings.Username }}" required>
+                            </div>
+                            <!-- Password -->
+                            <div class="mb-3">
+                                <label class="form-label" for="inputPassword">Password</label>
+                                <input type="text" class="form-control" id="inputPassword" name="password"
+                                    value="{{ settings.Password }}" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-color">Save</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
-
     </div>
 </main>
 

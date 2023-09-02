@@ -51,6 +51,50 @@ func CreateTcpConfiguration(service StreamService, active bool) error {
 	return nil
 }
 
+// DeleteTcpConfiguration Delete configuration files for TCP mode
+func DeleteTcpConfiguration(service StreamService) error {
+	baseDir := fmt.Sprintf("%d", service.ExternalPort)
+	baseDir = filepath.Join(config.Settings.NginxConfPath, baseDir)
+	mappingDir := filepath.Join(baseDir, "mappings")
+	backendDir := filepath.Join(baseDir, "backends")
+	named_conf := fmt.Sprintf("%s.conf", service.BackendName)
+
+	// Remove backend configuration
+	backendConf := filepath.Join(backendDir, named_conf)
+	if err := os.Remove(backendConf); err != nil && !os.IsNotExist(err) {
+		return err
+	}
+	// Remove mapping configuration
+	mappingConf := filepath.Join(mappingDir, named_conf)
+	if err := os.Remove(mappingConf); err != nil && !os.IsNotExist(err) {
+		return err
+	}
+
+	// Check if 'backends' and 'map' directories are empty
+	backendsEmpty, err := isDirEmpty(backendDir)
+	if err != nil {
+		return err
+	}
+	mappingsEmpty, err := isDirEmpty(mappingDir)
+	if err != nil {
+		return err
+	}
+
+	// If both directories are empty, remove port configuration
+	if backendsEmpty && mappingsEmpty {
+		portConf := fmt.Sprintf("%s.conf", baseDir)
+		if err := os.Remove(portConf); err != nil && !os.IsNotExist(err) {
+			return err
+		}
+
+		// Remove directory base directory /etc/nginx/conf.d/${port}
+		if err := os.RemoveAll(baseDir); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func createPortConf(baseDir string, service StreamService) error {
 	templ, err := resolveTemplate(TCP_PROXY_TEMPLATE, service)
 	if err != nil {
