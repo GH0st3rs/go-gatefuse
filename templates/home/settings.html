@@ -1,0 +1,43 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Settings {% endblock title %}
+
+<!-- Specific CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+<!-- ### $App Screen Content ### -->
+<main class='main-content bgc-grey-100'>
+    <div id='mainContent'>
+
+        <div class="masonry-item">
+            <div class="bgc-white p-20 bd">
+                <h6 class="c-grey-900">App Settings</h6>
+                <div class="mT-30">
+                    <form id="appSettingsForm" method="POST">
+                        <!-- MainDomain -->
+                        <div class="mb-3">
+                            <label class="form-label" for="inputServerDomain">Server domain name</label>
+                            <input type="text" class="form-control" id="inputServerDomain" name="main_domain"
+                                value="{{ settings.MainDomain }}" required>
+                        </div>
+                        <!-- NginxConfPath -->
+                        <div class="mb-3">
+                            <label class="form-label" for="inputNginxConfigPath">Path to NGINX conf.d directory</label>
+                            <input type="text" class="form-control" id="inputNginxConfigPath" name="nginx_conf_path"
+                                value="{{ settings.NginxConfPath }}" placeholder="/etc/nginx/conf.d" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-color">Save</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

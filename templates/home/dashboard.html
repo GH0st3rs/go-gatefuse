@@ -1,0 +1,64 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Dashboard {% endblock title %}
+
+<!-- Specific CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+<!-- ### $App Screen Content ### -->
+<main class='main-content bgc-grey-100'>
+    <div id='mainContent'>
+        <div class="full-container">
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="bgc-white bd bdrs-3 p-20">
+                        <h4 class="c-grey-900 mB-20">Hoverable rows</h4>
+                        <p>Add <code class="highlighter-rouge">.table-hover</code> to enable a hover state on table rows
+                            within a <code class="highlighter-rouge">&lt;tbody&gt;</code>.</p>
+                        <button type="button" class="btn-warning" data-bs-toggle="modal"
+                            data-bs-target="#ruleSettingsModal">
+                            <i class="ti-plus"></i>
+                        </button>
+                        <table class="table table-hover" id="gateTable">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Status</th>
+                                    <th scope="col">Dest Addr</th>
+                                    <th scope="col">Dest Port</th>
+                                    <th scope="col">Source Addr</th>
+                                    <th scope="col">Source Port</th>
+                                    <th scope="col">Protocol</th>
+                                    <th scope="col">Comment</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                        {% include 'home/add-gate-modal.html' %}
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</main>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+<script>
+    var settings = {
+        MainDomain: "{{settings.MainDomain}}",
+    }
+</script>
+<script src="/static/assets/js/gateTable.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        loadGateTable();
+    });
+</script>
+{% endblock javascripts %}
