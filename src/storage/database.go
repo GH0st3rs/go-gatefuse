@@ -2,12 +2,18 @@ package storage
 
 import (
 	"database/sql"
+	"errors"
+	"fmt"
 	"go-gatefuse/src/config"
+	"reflect"
+	"strings"
 )
 
-func CreateTables(db *sql.DB) error {
+func InitializeDatabaseTables(db *sql.DB) error {
 	createTableSQL := `
-    CREATE TABLE IF NOT EXISTS gate_records (
+	DROP TABLE IF EXISTS gate_records;
+	DROP TABLE IF EXISTS app_settings;
+    CREATE TABLE gate_records (
         src_port INTEGER,
         src_addr TEXT,
         dst_port INTEGER,
@@ -17,12 +23,16 @@ func CreateTables(db *sql.DB) error {
         active BOOLEAN,
         uuid TEXT PRIMARY KEY
     );
-	CREATE TABLE IF NOT EXISTS app_settings (
-		main_domain TEXT,
-		nginx_conf_path TEXT,
-		username TEXT,
-		password TEXT
+	CREATE TABLE app_settings (
+		main_domain TEXT NOT NULL,
+		nginx_conf_path TEXT NOT NULL,
+		unbound_conf_path TEXT NOT NULL,
+  		unbound_remote BOOLEAN NOT NULL,
+  		unbound_remote_host TEXT NOT NULL,
+		username TEXT NOT NULL,
+		password TEXT NOT NULL
 	);
+	INSERT INTO app_settings(main_domain, nginx_conf_path, unbound_conf_path, unbound_remote, unbound_remote_host, username, password) VALUES ("", "", "", false, "", "admin", "admin");
     `
 	_, err := db.Exec(createTableSQL)
 	return err
@@ -87,18 +97,56 @@ func DeleteGateRecord(db *sql.DB, uuid string) error {
 }
 
 func SaveAppSettings(db *sql.DB) error {
-	stmt, err := db.Prepare("UPDATE app_settings SET main_domain = ?, nginx_conf_path = ?, username = ?, password = ?")
+	t := reflect.TypeOf(config.Settings)
+	v := reflect.ValueOf(config.Settings)
+
+	if t.Kind() != reflect.Struct {
+		return errors.New("src should be of struct type")
+	}
+
+	columns := make([]string, t.NumField())
+	values := make([]interface{}, t.NumField())
+
+	for i := 0; i < t.NumField(); i++ {
+		jsonTag := t.Field(i).Tag.Get("json")
+		if jsonTag == "" {
+			return fmt.Errorf("missing json tag for field %s", t.Field(i).Name)
+		}
+
+		columns[i] = fmt.Sprintf("%s = ?", jsonTag)
+		values[i] = v.Field(i).Interface()
+	}
+	query := fmt.Sprintf("UPDATE app_settings SET %s;", strings.Join(columns, ","))
+	stmt, err := db.Prepare(query)
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
-
-	_, err = stmt.Exec(config.Settings.MainDomain, config.Settings.NginxConfPath, config.Settings.Username, config.Settings.Password)
+	_, err = stmt.Exec(values...)
 	return err
+
 }
 
-func LoadAppSettings(db *sql.DB) (s config.AppSettings) {
-	row := db.QueryRow("SELECT main_domain, nginx_conf_path, username, password FROM app_settings")
-	row.Scan(&s.MainDomain, &s.NginxConfPath, &s.Username, &s.Password)
-	return s
+// LoadAppSettings Load settings from SQL to the structure described as `dst`
+func LoadAppSettings(db *sql.DB, dst interface{}) error {
+	t := reflect.TypeOf(dst).Elem()
+	v := reflect.ValueOf(dst).Elem()
+
+	if t.Kind() != reflect.Struct {
+		return errors.New("dst should be a pointer to struct type")
+	}
+
+	columns := make([]string, t.NumField())
+	for i := 0; i < t.NumField(); i++ {
+		columns[i] = t.Field(i).Tag.Get("json")
+	}
+
+	row := db.QueryRow(fmt.Sprintf("SELECT %s FROM app_settings LIMIT 1", strings.Join(columns, ",")))
+
+	values := make([]interface{}, t.NumField())
+	for i := 0; i < t.NumField(); i++ {
+		values[i] = v.Field(i).Addr().Interface()
+	}
+
+	return row.Scan(values...)
 }

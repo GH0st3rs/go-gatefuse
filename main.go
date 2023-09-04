@@ -54,7 +54,7 @@ func main() {
 	})
 	app.Static("/static/assets", "./static/assets")
 	// Enable debug output
-	if config.AppDebug {
+	if *config.AppDebug {
 		app.Use(logger.New())
 	}
 	// Associate favicon image
@@ -70,7 +70,7 @@ func main() {
 		KeyLookup:  "cookie:csrf_token",
 	}))
 	// Use cache middleware with a global expiration time of 10 minutes
-	if config.UseCache {
+	if *config.UseCache {
 		// Next -  defines a function to skip the middleware.
 		app.Use(cache.New(cache.Config{Next: nil, Expiration: 10 * time.Minute}))
 	}
@@ -87,7 +87,7 @@ func main() {
 	rest.GateInit(app)
 
 	// Start server listener
-	url := fmt.Sprintf("%s:%d", config.AppHost, config.AppPort)
+	url := fmt.Sprintf("%s:%d", *config.AppHost, *config.AppPort)
 	if err := app.Listen(url); err != nil {
 		log.Fatalln("Failed to start: ", err.Error())
 	}

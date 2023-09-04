@@ -3,7 +3,7 @@
 	"tasks": [
 		{
 			"type": "go",
-			"label": "Build Project",
+			"label": "Build Workspace",
 			"command": "build",
 			"args": [
 				"--ldflags=-s -w",

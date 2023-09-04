@@ -8,11 +8,15 @@ import (
 )
 
 type AppSettings struct {
-	MainDomain    string `json:"main_domain" form:"main_domain"`
-	NginxConfPath string `json:"nginx_conf_path" form:"nginx_conf_path"`
-	Username      string `json:"username" form:"username"`
-	Password      string `json:"password" form:"password"`
-	RequestType   string `json:"request_type" form:"request_type"`
+	// Main App settings
+	MainDomain        string `json:"main_domain" form:"main_domain"`
+	NginxConfPath     string `json:"nginx_conf_path" form:"nginx_conf_path"`
+	UnboundConfPath   string `json:"unbound_conf_path" form:"unbound_conf_path"`
+	UnboundRemote     bool   `json:"unbound_remote" form:"unbound_remote"`
+	UnboundRemoteHost string `json:"unbound_remote_host" form:"unbound_remote_host"`
+	// Authentication settings
+	Username string `json:"username" form:"username"`
+	Password string `json:"password" form:"password"`
 }
 
 type GateRecord struct {
@@ -28,10 +32,11 @@ type GateRecord struct {
 
 var (
 	// App Variables
-	AppPort  = *flag.Int("app_port", 3000, "Listening port")
-	AppHost  = *flag.String("app_host", "0.0.0.0", "Listening address")
-	AppDebug = *flag.Bool("debug", true, "Enable debug print")
-	UseCache = *flag.Bool("cache", false, "Use web cache")
+	AppPort  = flag.Int("app_port", 3000, "Listening port")
+	AppHost  = flag.String("app_host", "0.0.0.0", "Listening address")
+	AppDebug = flag.Bool("debug", true, "Enable debug print")
+	UseCache = flag.Bool("cache", false, "Use web cache")
+	AppInit  = flag.Bool("init", false, "Initialize (or re-initialize) the database")
 	Settings AppSettings
 	// Fiber Variables
 	SqliteStorage  = sqlite3.New()
