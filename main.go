@@ -10,6 +10,7 @@ import (
 	"log"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cache"
 	"github.com/gofiber/fiber/v2/middleware/csrf"
 	"github.com/gofiber/fiber/v2/middleware/favicon"
 	"github.com/gofiber/fiber/v2/middleware/logger"
@@ -52,6 +53,7 @@ func main() {
 		ErrorHandler: CustomErrorHandler,
 	})
 	app.Static("/static/assets", "./static/assets")
+	// Enable debug output
 	if config.AppDebug {
 		app.Use(logger.New())
 	}
@@ -67,6 +69,11 @@ func main() {
 		CookieName: "csrf_token",
 		KeyLookup:  "cookie:csrf_token",
 	}))
+	// Use cache middleware with a global expiration time of 10 minutes
+	if config.UseCache {
+		// Next -  defines a function to skip the middleware.
+		app.Use(cache.New(cache.Config{Next: nil, Expiration: 10 * time.Minute}))
+	}
 
 	if err := storage.CreateTables(config.SqliteStorage.Conn()); err != nil {
 		log.Fatalln("Failed to create additional tables: ", err.Error())

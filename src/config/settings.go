@@ -31,6 +31,7 @@ var (
 	AppPort  = *flag.Int("app_port", 3000, "Listening port")
 	AppHost  = *flag.String("app_host", "0.0.0.0", "Listening address")
 	AppDebug = *flag.Bool("debug", true, "Enable debug print")
+	UseCache = *flag.Bool("cache", false, "Use web cache")
 	Settings AppSettings
 	// Fiber Variables
 	SqliteStorage  = sqlite3.New()

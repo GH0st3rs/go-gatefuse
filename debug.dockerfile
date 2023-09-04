@@ -5,7 +5,7 @@ RUN xbps-install -Syu xbps ncurses-term zsh zsh-autosuggestions zsh-completions 
 # Set environment variables
 ENV TERM=xterm-256color SHELL=/bin/zsh PATH=${PATH}:/usr/local/go/bin:/opt/go/bin
 
-RUN xbps-install -Sy nginx nginx-mod-stream git tree
+RUN xbps-install -Sy nginx nginx-mod-stream git tree gcc
 
 # Configure Nginx
 COPY docker/etc/nginx/nginx.conf /etc/nginx/nginx.conf
