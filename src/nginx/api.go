@@ -1,6 +1,7 @@
 package nginx
 
 import (
+	"errors"
 	"fmt"
 	"go-gatefuse/src/config"
 	"os"
@@ -41,12 +42,13 @@ func ToggleConfig(record config.GateRecord) error {
 
 func ReloadNginx() error {
 	_, err := exec.Command("nginx", "-t").Output()
-	if err != nil {
-		return err
+	var e *exec.ExitError
+	if err != nil && errors.As(err, &e) {
+		return fmt.Errorf("%s", e.Stderr)
 	}
 	_, err = exec.Command("nginx", "-s", "reload").Output()
-	if err != nil {
-		return err
+	if err != nil && errors.As(err, &e) {
+		return fmt.Errorf("%s", e.Stderr)
 	}
 	return nil
 }

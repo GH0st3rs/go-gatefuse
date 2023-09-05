@@ -1,3 +1,18 @@
+function createAlert(message, type) {
+    // Remove existing alerts
+    $(".alert").remove();
+    // Create an alert dynamically
+    var $alertDiv = $('<div class="alert fade show" role="alert"></div>');
+    // Add alert class type
+    $alertDiv.addClass("alert-" + type);
+    $alertDiv.html(message.replace(/\n/g, '<br>'));
+    $alertDiv.click(function () { $(this).alert('close'); });
+    // Add close timeout
+    setTimeout(function () { $(".alert").remove(); }, 30000);
+    // Show alert
+    $('#alertContainer').append($alertDiv);
+}
+
 function createGateTableRow(item) {
     var $row = $('<tr>', { 'id': item.UUID });
     // Checkbox column
@@ -7,6 +22,7 @@ function createGateTableRow(item) {
     });
     if (item.Active) {
         $checkbox.prop('checked', true);
+        $checkbox.change(toggleRule);
     }
     var $checkboxDiv = $('<div>', { 'class': 'form-switch ai-c' }).append($checkbox);
     var $checkboxColumn = $('<th>', { 'scope': 'row' }).append($checkboxDiv);
@@ -15,13 +31,14 @@ function createGateTableRow(item) {
     $row.append(
         $checkboxColumn,
         // Other columns
-        $('<td>').text(item.DstAddr),
-        $('<td>').text(item.DstPort),
-        $('<td>').text(item.SrcAddr),
-        $('<td>').text(item.SrcPort),
-        $('<td>').text(item.Protocol),
-        $('<td>').text(item.Comment)
+        $('<td>').text(item.DstAddr).click(clickOnRow),
+        $('<td>').text(item.DstPort).click(clickOnRow),
+        $('<td>').text(item.SrcAddr).click(clickOnRow),
+        $('<td>').text(item.SrcPort).click(clickOnRow),
+        $('<td>').text(item.Protocol).click(clickOnRow),
+        $('<td>').text(item.Comment).click(clickOnRow)
     );
+    $('#gateTable tbody td');
     return $row;
 }
 
@@ -53,8 +70,10 @@ function clickOnRow(event) {
 }
 
 function toggleRule(event) {
-    var $row = $(this).parent().parent().parent()
-    var formData = JSON.stringify({ "UUID": $row.prop('id'), "Active": $(this).prop('checked') });
+    var checkbox$ = $(this);
+    var $row = checkbox$.parent().parent().parent()
+    var active = checkbox$.prop('checked');
+    var formData = JSON.stringify({ "UUID": $row.prop('id'), "Active": active });
     $.ajax({
         type: "POST",
         url: "/toggle",
@@ -63,7 +82,8 @@ function toggleRule(event) {
         data: formData
     }).done(function (data) {
         if (!data.status) {
-            $(this).prop('checked', false);
+            checkbox$.prop('checked', !active);
+            createAlert(data.error, "danger");
         }
     });
 }
@@ -77,6 +97,7 @@ function loadGateTable() {
         if (data.status) {
             var $dataTable = $('#gateTable tbody');
             $dataTable.empty();
+            if (!data.routes) return;
             data.routes.forEach(function (item) {
                 var $row = createGateTableRow(item);
                 // Append the row to the table
@@ -86,7 +107,7 @@ function loadGateTable() {
             $('#gateTable tbody td').click(clickOnRow);
             $('#gateTable input[type="checkbox"]').change(toggleRule);
         } else {
-            alert(data.error);
+            createAlert(data.error, "danger");
         }
     });
 }
@@ -94,6 +115,7 @@ function loadGateTable() {
 function validateNewRuleForm() {
     var form = $('#createNewRuleForm')[0];
     if (form.checkValidity() === false) {
+        form.classList.add('was-validated');
         return false;
     }
     form.classList.add('was-validated');
@@ -126,7 +148,7 @@ function createRequest() {
             // Append the row to the table
             $dataTable.append($row);
         } else {
-            alert(data.error);
+            createAlert(data.error, "danger");
         }
     });
 }
@@ -144,7 +166,7 @@ function updateRequest() {
             var $row = $('#' + data.response.UUID);
             $row = createGateTableRow(data.response);
         } else {
-            alert(data.error);
+            createAlert(data.error, "danger");
         }
     });
 }
@@ -212,7 +234,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 var $row = $('#' + data.response);
                 $row.remove();
             } else {
-                alert(data.error);
+                createAlert(data.error, "danger");
             }
         });
         closeNewRuleForm();
