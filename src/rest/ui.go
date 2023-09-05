@@ -35,6 +35,7 @@ func SaveSettingsHandler(c *fiber.Ctx) error {
 	// Update settings based on request
 	config.Settings.MainDomain = request.MainDomain
 	config.Settings.NginxConfPath = request.NginxConfPath
+	// TODO: Add unbound settings
 	//Save settings
 	if err := storage.SaveAppSettings(config.SqliteStorage.Conn()); err != nil {
 		return c.Status(500).Render("home/page-500", fiber.Map{"msg": err.Error()})

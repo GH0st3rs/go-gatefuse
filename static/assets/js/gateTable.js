@@ -61,7 +61,11 @@ function toggleRule(event) {
         dataType: "json",
         contentType: "application/json",
         data: formData
-    })
+    }).done(function (data) {
+        if (!data.status) {
+            $(this).prop('checked', false);
+        }
+    });
 }
 
 function loadGateTable() {

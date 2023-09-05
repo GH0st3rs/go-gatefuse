@@ -8,6 +8,7 @@ import (
 	"go-gatefuse/src/rest"
 	"go-gatefuse/src/storage"
 	"log"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cache"
@@ -74,11 +75,17 @@ func main() {
 		// Next -  defines a function to skip the middleware.
 		app.Use(cache.New(cache.Config{Next: nil, Expiration: 10 * time.Minute}))
 	}
-
-	if err := storage.CreateTables(config.SqliteStorage.Conn()); err != nil {
-		log.Fatalln("Failed to create additional tables: ", err.Error())
+	// Initialize database
+	if *config.AppInit {
+		if err := storage.InitializeDatabaseTables(config.SqliteStorage.Conn()); err != nil {
+			log.Fatalln("Failed to create additional tables: ", err.Error())
+		}
+		return
 	}
-	config.Settings = storage.LoadAppSettings(config.SqliteStorage.Conn())
+
+	if err := storage.LoadAppSettings(config.SqliteStorage.Conn(), &config.Settings); err != nil {
+		log.Fatalln("Failed to load the settings: ", err.Error())
+	}
 
 	// Register new handlers
 	rest.AuthInit(app)

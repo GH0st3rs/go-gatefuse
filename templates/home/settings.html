@@ -33,11 +33,11 @@
                             </div>
                             <!-- UnboundConfPath -->
                             <div class="mb-3">
-                                <label class="form-label" for="inputUnboundConfigPath">Path to Unbound config
+                                <label class="form-label" for="inputUnboundConfigPath">Path to Unbound conf.d
                                     directory</label>
                                 <input type="text" class="form-control" id="inputUnboundConfigPath"
                                     name="unbound_conf_path" value="{{ settings.UnboundConfPath }}"
-                                    placeholder="/etc/unbound/" required>
+                                    placeholder="/etc/unbound/conf.d" required>
                             </div>
                             <!-- UnboundRemote -->
                             <div class="mb-3">
@@ -54,27 +54,6 @@
                                 <input type="text" class="form-control" id="inputUnboundRemoteHost"
                                     name="unbound_remote_host" value="{{ settings.UnboundRemoteHost }}"
                                     placeholder="127.0.0.1">
-                            </div>
-
-
-                            <p>
-                                <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" role="button"
-                                    aria-expanded="false" aria-controls="collapseExample">
-                                    Link with href
-                                </a>
-                                <button class="btn btn-primary" type="button" data-toggle="collapse"
-                                    data-target="#collapseExample" aria-expanded="false"
-                                    aria-controls="collapseExample">
-                                    Button with data-target
-                                </button>
-                            </p>
-                            <div class="collapse" id="collapseExample">
-                                <div class="card card-body">
-                                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry
-                                    richardson ad squid. Nihil anim
-                                    keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea
-                                    proident.
-                                </div>
                             </div>
 
                             <button type="submit" class="btn btn-primary btn-color">Save</button>
